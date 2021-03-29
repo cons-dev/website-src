@@ -1,0 +1,21 @@
+#+TITLE: (cons dev nil)
+#+SUBTITLE: Main Index
+#+DESCRIPTION: A blog on lisp, worldbuilding, cooking, and all sorts of other things.
+#+OPTIONS: toc:nil
+#+ROAM_TAGS: website public
+
+* Introduction
+This is my website where I post about metaprogramming, worldbuilding, programming language theory, cooking, music, and other such things. I also occasionally write NSFW things (which are indicated with the [NSFW] tag). I also might post some programming tutorials. You can see a [[file:changelog.org][changelog]], and a listing of [[file:todo.org][todo items]] in their respective files.
+
+* Indices
+These link to the various categories in the website.
+** [[file:programming-index.org][Programming]]
+** [[file:food-index.org][Food]]
+** [[file:fiction-index.org][Fiction]]
+** Blog Posts                                    :noexport:
+** Music                                         :noexport:
+** Art                                           :noexport:
+** Games                                         :noexport:
+
+* Source Code
+The source code for the stuff that generated the blog is [[file:source-code.org][available here]] in blog-post form. Major changes to that code (and the occasional major update to the blog) are noted in the [[file:changelog.org][changelog]].

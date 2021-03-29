@@ -1,0 +1,26 @@
+#+TITLE: Blog Changelog
+#+DESCRIPTION: A list of changes that the blog has undergone.
+#+ROAM_TAGS: website public changelog
+
+This documents major changes to the [[file:source-code.org][source code]] of the blog, as well as any major page layout changes.
+
+* 1.0.2 - 2021-W13-1
+** Added
+- [[file:../../../.local/share/Trash/files/blog-code.org][preamble and postamble]] to blog posts
+- CC-BY-SA 4.0 license
+** Removed
+- top/home section
+- replaced top/home header with [[file:../../../.local/share/Trash/files/blog-code.org][preamble]] to increase clarity
+
+* 1.0.1 - 2021-W13-1
+** Added
+- proper colorization of TODO items in headlines
+
+* 1.0 - 2021-W12-7
+** Added
+- [[file:../../../.local/share/Trash/files/blog-code.org][basic CSS layout]] to mimic Emacs configuration
+- a few files from my memex
+- created [[file:../../../.local/share/Trash/files/blog-code.org][.dir-locals system]] to help centralize blog configuration
+
+
+ 

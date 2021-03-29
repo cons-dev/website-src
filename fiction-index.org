@@ -1,0 +1,13 @@
+#+TITLE: Fiction Index
+#+DESCRIPTION: An index of posts about writing and books I have read
+#+OPTIONS: toc:nil
+#+ROAM_TAGS: blog public index creative-writing
+
+* Introduction
+This is a listing of various short stories, not-so-short stories, and worldubilding documents for various projects.
+
+* Short Stories
+** [[file:ffs-ffs.org][FFS, FFS!]]
+** A Meeting with Eris [NSFW]                    :noexport:
+
+* Worldbuilding                                   :noexport:

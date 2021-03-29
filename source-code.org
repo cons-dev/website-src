@@ -1,0 +1,280 @@
+#+TITLE: Website Source Code
+#+DESCRIPTION: The source code for my blog, presented in a nice HTML file with commentary.
+#+PROPERTY: header-args :noweb no-export
+#+ROAM_TAGS: website public source-code
+
+* Introduction
+This is my the source code for my website. Currently it's only CSS, some emacs config, and a bit of HTML, but eventually I intend to add features for running ClojureScript in source code blocks among other things. Changes to this file will be noted in the [[file:changelog.org][changelog]].
+
+The entire document is done in a nonlinear format, so each section does not exactly relate to an individual file, but rather combines the various files used into one.
+
+* Lein Setup
+This sets up the Clojure project. Right now I don't actually really use the project per-se, but rather use it to generate CSS and HTML code from code blocks. Eventually I intend to add the ability to run ClojureScript in code blocks, but for now this works.
+#+BEGIN_SRC clojure
+(defproject cons-blog "1.0.0"
+  :description "Generate HTML and CSS for org mode export."
+  :dependencies [[org.clojure/clojure "1.10.2"]
+                 <<stylesheet-deps>>
+                 <<html-deps>>])
+#+END_SRC
+
+* Project Setup
+This is the Emacs Lisp code used to define the project. I use the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html][per-directory local variable]] functionality to set the ~org-html-publish~ settings.
+** Site Info
+This gets the blog info and sets the directories relative to the current one. It also sets the website name, adds the basic HTML publish / indent features, and excludes drafts from the project. (idea taken from [[https://www.john2x.com/blog/blogging-with-orgmode.html][John Louis Del Rosario]]).
+#+NAME: emacs-site-info
+#+BEGIN_SRC emacs-lisp
+"(cons dev nil)"
+:language "en"
+:author "Inanna"
+:exclude "level-.*\\|.*\.draft\.org"
+:html-metadata-timestamp-format "%G-W%V-%u %H:%M"
+:base-directory ,(f-expand (concat default-directory "../src"))
+:publishing-directory ,(f-expand (concat default-directory "../public"))
+:publishing-function org-html-publish-to-html
+:html-html5-fancy t
+:html-indent nil
+#+END_SRC
+
+** Domain Data
+This adds the CNAME data to the file.
+#+BEGIN_SRC text :tangle ../public/CNAME
+cons.dev
+#+END_SRC
+
+** Index and Sitemap
+This configures the sitemap title. It is automatically generated for all pages to make my life easier. Currently I use a flat layout for my website, so it is simply a list of all nodes. Eventually I want it to be displayed as a graph of links.
+#+NAME: emacs-sitemap
+#+BEGIN_SRC emacs-lisp
+:sitemap-title "Sitemap"
+:auto-sitemap t
+#+END_SRC
+
+** Directory Local Variables
+This is the setup of the dir locals for the blog.
+#+BEGIN_SRC emacs-lisp :tangle .dir-locals.el
+((nil . ((eval
+          . (setq
+             org-publish-project-alist
+             `((
+                <<emacs-site-info>>
+                <<emacs-sitemap>>
+                <<emacs-preamble>>
+                <<emacs-postamble>>
+                <<emacs-idx-sitemap>>
+                <<emacs-stylesheet>>)))))))
+#+END_SRC
+
+** Git Setup
+This is basically the (rather small) amount of setup used to ensure that generated files are not included in the git repository.
+#+BEGIN_SRC gitignore :tangle .gitignore
+.dir-locals.el
+.gitignore
+#+END_SRC
+
+
+* HTML
+This is where I configure the HTML displayed by the system.
+
+** Dependencies
+Here
+#+NAME: html-deps.
+#+BEGIN_SRC clojure
+[hiccup "1.0.5"]
+#+END_SRC
+
+** Preamble and Postamble
+This is the first section of the program and the
+
+*** License Info
+This is the license info for my website. I selected the license because it provides one-way compatibility with the GPL-3.0 license. Thus I can license my code under the GPL, while licensing most of the text of the site under the [[https://creativecommons.org/licenses/by-sa/4.0/][CC-BY-SA 4.0 license]]. Currently it is displayed in the postamble on all pages, though I might want to alter that someday.
+
+#+NAME: license-info
+#+BEGIN_SRC clojure :results verbatim
+[:p {:class "license"}
+ [:a {:href "https://cons.dev"} "cons.dev"]
+ " is licensed under a "
+ [:a {:rel "license" :href "https://creativecommons.org/licenses/by-sa/4.0/"}
+  "Creative Commons Attribution-ShareAlike 4.0 International License"]]
+#+END_SRC
+
+*** Preamble
+This adds a few links to the beginning of the document to aid with navigation.
+#+NAME: emacs-html-preamble
+#+BEGIN_SRC clojure :results verbatim
+(use 'hiccup.core)
+(html [:a {:href "index.html"} "MAIN INDEX"]
+      " | "
+      [:a {:href "sitemap.html"} "SITEMAP"]
+      " | "
+      [:a {:href "https://github.com/cons-dev/website-src"} "SOURCE CODE (git)"])
+#+END_SRC
+
+This is the Emacs code that sets the preamble
+#+NAME: emacs-preamble
+#+BEGIN_SRC emacs-lisp
+:html-preamble t
+:html-preamble-format '("en" <<emacs-html-preamble()>>)
+#+END_SRC
+
+*** Postamble
+The end of each document this adds a little bit of text containing the info about the program that created it, the date the file was modified, and licensing information
+#+NAME: emacs-html-postamble
+#+BEGIN_SRC clojure :results verbatim
+(use 'hiccup.core)
+(html [:p {:class "date"} "Last Modified: %C"]
+      [:p {:class "creator"} "Generated Using: %c"]
+       <<license-info>>)
+#+END_SRC
+
+This code sets the postamble.
+#+NAME: emacs-postamble
+#+BEGIN_SRC emacs-lisp
+:html-postamble t
+:html-postamble-format '("en" <<emacs-html-postamble()>>)
+#+END_SRC
+
+
+* Stylesheets
+While [[https://orgmode.org/manual/HTML-Export.html#HTML-Export][org-html-export]] does an admirable job at exporting code in my preferred syntax highlighting style, it unfortunately does not replicate the other features of my org-mode buffers. To do that I use [[https://github.com/noprompt/garden][Garden]], a Clojure library for rendering CSS.
+
+** Emacs Configuration
+This adds the Emacs configuration for the stylesheets in the blog. It also adds a link to the fonts stylesheet.
+#+NAME: stylesheet-html
+#+BEGIN_SRC clojure :results verbatim
+(use 'hiccup.core)
+(html [:link {:rel "stylesheet" :type "text/css" :href "site.css"}])
+#+END_SRC
+This code then generates the HTML head used.
+#+NAME: emacs-stylesheet
+#+BEGIN_SRC emacs-lisp
+:html-head <<stylesheet-html()>>
+#+END_SRC
+
+** Create CSS File
+This creates the CSS file in my public directory. It is automatically called every time the project is updated (thus generating the CSS file).
+#+NAME: stylesheet
+#+BEGIN_SRC clojure :results silent
+(ns stylesheets
+  "A namespace for stylesheets"
+  (:require [garden.core :refer [css]]
+            [garden.def :refer [defcssfn]]
+            [garden.stylesheet :refer [at-import]]))
+
+(defcssfn url)
+
+(spit "./public/site.css"
+      (css
+       (at-import (url "fonts/iosevka-term.css"))
+       <<stylesheet-todo>>
+       <<stylesheet-font-face>>
+       <<stylesheet-default>>
+       <<stylesheet-selection>>
+       <<stylesheet-headlines>>
+       <<stylesheet-info>>
+       <<stylesheet-links>>
+       <<stylesheet-src-hover-info>>
+       <<stylesheet-src-block>>))
+#+END_SRC
+
+#+CALL: stylesheet()
+
+** Default Background and Foreground
+This keeps the default background and foreground in sync with the rest of the system. To see the code blocks being called, view the [[Helper Code Blocks][helper blocks]] section. I also set up the font I use here, in this case ~Iosevka Term Web~, a pleasing DIN-like font that is entirely fixed-width for use in terminals.
+#+NAME: stylesheet-default
+#+BEGIN_SRC clojure
+[:body {:background-color <<face-bg(face="default")>>
+        :color            <<face-fg(face="default")>>
+        :font-family      "'Iosevka Term Web'"}]
+#+END_SRC
+
+** TODO Items
+This fixes the coloration of TODO keywords in headers.
+#+NAME: stylesheet-todo
+#+BEGIN_SRC clojure
+[:.todo {:color <<face-fg(face="org-todo")>>}]
+[:.done {:color <<face-fg(face="org-headline-done")>>}]
+#+END_SRC
+
+** Selected Text
+This makes the text selection look good.
+#+NAME: stylesheet-selection
+#+BEGIN_SRC clojure
+["::selection" {:background-color <<face-bg(face="region")>>
+                :color            'none}]
+#+END_SRC
+
+** Headlines
+Here I restyle the headlines using the style I currently use in Emacs. These code blocks automatically fetch them through doom-colors and return a string that can be inserted.
+#+NAME: stylesheet-headlines
+#+BEGIN_SRC clojurescript
+[:h2 {:color <<face-fg(face="outline-1")>>}]
+[:h3 {:color <<face-fg(face="outline-2")>>}]
+[:h4 {:color <<face-fg(face="outline-3")>>}]
+#+END_SRC
+
+** Author and Title Information
+The title, date, and author information in Emacs are usually the same color. So I set them here.
+#+NAME: stylesheet-info
+#+BEGIN_SRC clojure
+[:p.author :p.date :p.creator :p.license
+ {:color <<face-fg(face="org-document-info")>>}]
+[:.title {:font-style 'italic
+          :color      <<face-fg(face="org-document-title")>>}]
+[:.subtitle {:font-style 'normal}]
+#+END_SRC
+
+*** Blocks
+This removes the irritating border and shadow from the code blocks.
+#+NAME: stylesheet-src-block
+#+BEGIN_SRC clojure
+[:pre.src {:background-color <<face-bg(face="org-block")>>}]
+[:pre {:top        0
+       :right      0
+       :box-shadow 'none
+       :border     'none}]
+#+END_SRC
+
+*** Hover Info
+This adds the hover info to ClojureScript, which was not included by default.
+#+NAME: stylesheet-src-hover-info
+#+BEGIN_SRC clojure
+[:pre.src-clojurescript:before
+ {:content "'ClojureScript'"}]
+[:pre.src:hover:before
+ {:display    'inline
+  :background-color <<face-bg(face="default")>>
+  :margin-top       "14px"
+  :border           'none}]
+#+END_SRC
+
+** Links
+This stylizes links to match the links in Emacs org-mode buffers.
+#+NAME: stylesheet-links
+#+BEGIN_SRC clojure
+[:a:link {:color <<face-fg(face="link")>>}]
+[:a:visited {:color <<face-fg(face="link-visited")>>}]
+[:a:hover
+ {:color            <<face-bg(face="default")>>
+  :background-color <<face-fg(face="link")>>
+  :text-decoration  'none}]
+[:a:hover
+ {:color            <<face-bg(face="default")>>
+  :background-color <<face-fg(face="link")>>
+  :text-decoration  'none}]
+#+END_SRC
+
+** Helper Code Blocks
+These are little helper code blocks that fetch the face attributes I want automatically from emacs every time I regenerate the file. This ensures that my code remains in-sync with my Emacs configuration style.
+
+This code block simply extracts the foreground color. Mostly used for headlines, but also for text in general.
+#+NAME: face-fg
+#+BEGIN_SRC emacs-lisp :results verbatim
+(face-attribute (intern face) :foreground)
+#+END_SRC
+
+This finds the background color of a face. Mostly this just extracts colors for source code block backgrounds and the backgrounds for the main text documents.
+#+NAME: face-bg
+#+BEGIN_SRC emacs-lisp :results verbatim
+(face-attribute (intern face) :background)
+#+END_SRC

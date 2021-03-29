@@ -1,0 +1,46 @@
+#+TITLE: Lamb with Wine
+#+DESCRIPTION: A sitemap for the (cons dev nil) website.
+#+ROAM_TAGS: website public recipe food original-recipe
+
+* Ingredients
+** Marinade
+| Mass (grams) | Ingredient                          |
+|--------------+-------------------------------------|
+|          450 | Lamb      (in 4-6 cm cubes)         |
+|          400 | Red Beets (in 4-6 cm cubes)         |
+|          200 | Red Wine                            |
+|          100 | Garlic (chopped finely)             |
+|          100 | Balsamic Vinegar                    |
+|           50 | Kalamata Olives (rinsed and sliced) |
+|           40 | Honey                               |
+|           25 | Walnuts (chopped)                   |
+|           20 | Fish Sauce                          |
+|            5 | Cocoa Powder                        |
+|            2 | Ground Black Pepper                 |
+|            2 | Rosemary (fresh)                    |
+|            1 | Red Pepper Flakes                   |
+|            1 | Thyme                               |
+|          0.5 | Cumin                               |
+|          0.2 | Nutmeg                              |
+** Fried Vegetables
+| Mass (grams) | Ingredient         |
+|--------------+--------------------|
+|          100 | Onion     (sliced) |
+|          200 | Mushrooms (sliced) |
+
+* Instructions
+** Marinading the Lamb and Vegetables
+Mix the ingredients that are going to be marinaded together and place them in a plastic bag. Be sure to remove as much air from the bag as is possible to fully immerse the lamb
+
+** Searing the Lamb, Mushrooms, and Onions
+First remove the lamb from the marinade and place it onto the cutting board. Remove olives, garlic, and anything else that sticks to it. Then pat the lamb dry.
+
+Then chop some mushrooms into medium-sized chunks and slice the onions into similar chunks.
+
+Add the olive oil to a nonstick pan (or add double the quantity to a steel pan) and heat it. Once it is hot enough to boil water, proceed to add the lamb, onions, and mushrooms.
+
+** Boiling the Mixture
+Once the lamb has obtained a browned texture on the exterior and the onions have also become browned, add the rest of the marinade and approximately 200 grams of water. Then let it simmer for approximately two to three hours, watching it until it produces a thick sauce.
+
+** Plating Suggestions
+Serve the meal in bowels and add curry powder to taste.
