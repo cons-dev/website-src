@@ -7,7 +7,8 @@
 * Conception
 So it's commonly said that Emacs does not have namespaces, everything is in one global mess of functions. This works because people create pseudo-namespaces by simply adding the name of the package onto the beginning of a function. This sadly leads to /really/ long function names that can be an impediment to comprehension.
 
-But I realized while working on this blog (specifically when using it to avoid polluting the global namespace [[file:source-code.org::*Automatic Publishing Function][here]]) that lexical binding and lexical closures were basically private functions and namespaces, if ugly looking. Therefore, if you just used something akin to this:
+But I realized while working on this blog (specifically when using it to avoid polluting the global namespace [[file:source-code.org::*Source Directories
+][here]]) that lexical binding and lexical closures were basically private functions and namespaces, if ugly looking. Therefore, if you just used something akin to this:
 #+BEGIN_SRC emacs-lisp
 (setq lexical-binding t)
 (let ((fun (lambda (var) (+ var 23))))
@@ -38,7 +39,7 @@ Regardless the algorithm for the transformations is fairly simple: first the sys
 
 Then the top level forms are macroexpanded fully and traversed in a depth first search, unquoting and replacing private function calls with ~funcall~ syntax. It is important to macroexpand the functions fully since they may contain features that are not properly called.
 
-Following this process private symbols are "collected" in order and transformed into the let syntax. Currently I use the ~let~ rather than ~let*~ for reasons discussed in the [[Private Functions / Macros Cannot Be Called to Set Private Variables][limitations]] section
+Following this process private symbols are "collected" in order and transformed into the let syntax which results in execution /mostly/ equivalent to the previous state. Currently I use the ~let~ rather than ~let*~ for reasons discussed in the [[Private Functions / Macros Cannot Be Called to Set Private Variables][limitations]] section.
 
 ** The ~ns~ Macro
 This is the macro itself and

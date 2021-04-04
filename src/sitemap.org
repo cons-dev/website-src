@@ -11,4 +11,4 @@
 - [[file:programming-index.org][Programming Index]]
 - [[file:todo.org][TODO Items]]
 - [[file:source-code.org][Website Source Code]]
-- [[file:repeated-design.org][repeated-design]]
+- [[file:../../../.local/share/Trash/files/repeated-design.org][repeated-design]]
