@@ -4,11 +4,18 @@
 #+ROAM_TAGS: website public source-code
 
 * Introduction
+:PROPERTIES:
+:ID:       e17fe4e7-f59a-4ad1-a525-aadc2f40b0ff
+:PUBDATE:  <2021-04-03 Sat 22:11>
+:END:
 This is my the source code for my website. Currently it's only CSS, some emacs config, and a bit of HTML, but eventually I intend to add features for running ClojureScript in source code blocks among other things. Changes to this file will be noted in the [[file:changelog.org][changelog]].
 
 The entire document is done in a nonlinear format, so each section does not exactly relate to an individual file, but rather combines the various files used into one. If you want to get to the code, just skip the intro and go straight to [[Lein Setup][Lein Setup]].
 
 ** Some History
+:PROPERTIES:
+:ID:       3e8bc3de-4215-417e-ba5e-1d2f1faf57b6
+:END:
 I have been blogging (and attempting to make websites) for a few years, however with each website I built I would run into a number of issues.
 
 In the beginning my issue was HTML, CSS, and JavaScript. All of them sucked quite a bit.
@@ -20,9 +27,16 @@ I have also recently been organizing my OS and system configuration into a giant
 However, when I read about the org-publish feature, I was very interested in writing my own website with it. So far the simple export feature has been all that it was advertised to be and seems to be more than sufficient to make a good blog.
 
 ** Implementation Concept
+:PROPERTIES:
+:ID:       061344e2-ad27-486c-9e19-72b5c5b7c60c
+:END:
 The implementation itself is designed to be entirely local to this directory. So providing the org files should be roughly equivalent to providing the site itself (minus the color scheme of my Emacs configuration). It also adds free content if you will to the site.
 
 * Lein Setup
+:PROPERTIES:
+:ID:       d913dcaa-31a7-4e14-93be-435777151a44
+:PUBDATE:  <2021-04-03 Sat 22:11>
+:END:
 This sets up the Clojure project. Right now I don't actually really use the project per-se, but rather use it to generate CSS and HTML code from code blocks. Eventually I intend to add the ability to run ClojureScript in code blocks, but for now this works.
 #+BEGIN_SRC clojure
 (defproject cons-blog "1.0.0"
@@ -34,8 +48,15 @@ This sets up the Clojure project. Right now I don't actually really use the proj
 
 
 * Website Setup
+:PROPERTIES:
+:ID:       213aac54-d63a-4d6e-91a9-b319eac884e6
+:PUBDATE:  <2021-04-03 Sat 22:11>
+:END:
 This is the Emacs Lisp code used to define the website. I use the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html][per-directory local variable]] functionality to set the ~org-html-publish~ settings.
 ** Website Info
+:PROPERTIES:
+:ID:       cb5d1a67-aae8-4752-a2f1-aa77c9d60e71
+:END:
 This gets the website info and sets the directories relative to the current one. It also sets the website name, adds the basic HTML publish / indent features, and excludes drafts from the project. (idea taken from [[https://www.john2x.com/blog/blogging-with-orgmode.html][John Louis Del Rosario]]).
 #+NAME: emacs-site-info
 #+BEGIN_SRC emacs-lisp
@@ -50,6 +71,9 @@ This gets the website info and sets the directories relative to the current one.
 #+END_SRC
 
 ** Source Directories
+:PROPERTIES:
+:ID:       1914d8ce-65d2-4ced-94e1-daaed92677e5
+:END:
 As of generating this file, thce directory above it contains the following files. 
 #+BEGIN_SRC sh :exports results :results verbatim
 ls ../ -nA
@@ -84,12 +108,18 @@ Here we add them to the project configuration. The ~:base-directory~ property is
 #+END_SRC
 
 ** Domain Data
+:PROPERTIES:
+:ID:       5e5cfeb1-a8b9-486b-8649-df5fae1b3b1b
+:END:
 This adds the CNAME data to the file. This is required for the site to serve properly under the A record I set up for it.
 #+BEGIN_SRC text :tangle ../public/CNAME
 cons.dev
 #+END_SRC
 
 ** Sitemap
+:PROPERTIES:
+:ID:       69529e3e-8001-4060-83e9-c59e312e6c7b
+:END:
 This configures the sitemap title and name. It is automatically generated for all pages to make my life easier. Currently I use a flat layout for my website, so it is simply a list of all nodes. Eventually I want it to be displayed as a graph of links.
 #+NAME: emacs-sitemap
 #+BEGIN_SRC emacs-lisp
@@ -98,6 +128,9 @@ This configures the sitemap title and name. It is automatically generated for al
 #+END_SRC
 
 ** TODO Automatic Publishing Function
+:PROPERTIES:
+:ID:       68630630-f9a1-4382-b49b-8ec26c02695d
+:END:
 This will eventually automatically publish files. Currently it is WIP and is published primarily because it realtes to my [[file:namespace-el.org][emacs namespacing adventures]].
 
 The assumption in the design is that I only really need to see the diff on the org files and the HTML files will sort themselves out. Therefore I just create a magit commit and do the job from there. The only issue is that the magit functions simply create buffers. I think the solution is to create a function to temporarily modify the hooks run after some of the functions.
@@ -116,14 +149,23 @@ The assumption in the design is that I only really need to see the diff on the o
 #+END_SRC
 
 *** The ~after-change~ Function                   :noexport:
+:PROPERTIES:
+:ID:       f1e11b1f-a78c-4409-9157-da91624389f8
+:END:
 Because this is 
 
 In order to solve this I have found that you can 
 
 ** TODO Cleaning Broken Internal Links           :noexport:
+:PROPERTIES:
+:ID:       210dc246-af87-436e-b7ae-ba9fd741beb3
+:END:
 Because this is meant to be a mixture of blog and public portion of my personal wiki, I have some links to internal documents.
 
 ** Directory Local Variables
+:PROPERTIES:
+:ID:       2d81e220-7f6a-4544-9180-77ab3fa18990
+:END:
 This is the setup of the dir locals for the blog. They are used to keep the entire project local to the current directory.
 #+BEGIN_SRC emacs-lisp :tangle ../dir-locals.el
 ((nil . ((eval
@@ -145,6 +187,9 @@ This is the setup of the dir locals for the blog. They are used to keep the enti
 #+END_SRC
 
 ** Git Setup
+:PROPERTIES:
+:ID:       e66fde4c-cfc1-4cd0-b508-f3d54b901d89
+:END:
 This is basically the (rather small) amount of setup used to ensure that generated files are not included in the git repository. It also ignores draft files.
 #+BEGIN_SRC gitignore :tangle ../.gitignore
 .dir-locals.el
@@ -169,9 +214,16 @@ pom.xml.asc
 #+END_SRC
 
 * TODO ClojureScript Execution                    :noexport:
+:PROPERTIES:
+:ID:       aadf750f-6314-48a8-a32b-b335c21765be
+:PUBDATE:  <2021-04-03 Sat 22:11>
+:END:
 This allows you to click "run" on the various ClojureScript codeblocks and get results from them.
 
 ** Approach Limitations
+:PROPERTIES:
+:ID:       ccc56d7e-960b-4cf8-8f91-3264546dc1b9
+:END:
 I have yet to add a system to automatically produce highlighted source code from it (which would be useful for demonstrating macroexpansion).
 
 The system currently works through parsing the code block itself as source code and then executing that. The advantage to this is that it is way simpler to implement (I don't have to break into Emacs and start modifying the HTML export function), but it also means it doesn't recognize noweb syntax. 
@@ -179,6 +231,9 @@ The system currently works through parsing the code block itself as source code 
 This is /pretty much/ good enough for my purposes, though I would prefer to eventually add noweb support.
 
 ** Dependencies
+:PROPERTIES:
+:ID:       62f7b1fb-66d9-4ece-8253-18d6f340559d
+:END:
 Here we add some code to lein to make our lives easier.  
 #+NAME: clojurescript-deps
 #+BEGIN_SRC
@@ -186,9 +241,16 @@ Here we add some code to lein to make our lives easier.
 #+END_SRC
 
 * HTML
+:PROPERTIES:
+:ID:       e35862d9-423e-454b-b941-76207657baf6
+:PUBDATE:  <2021-04-03 Sat 22:11>
+:END:
 This is where I configure the HTML displayed by the system.
 
 ** Dependencies
+:PROPERTIES:
+:ID:       c8112457-a095-4c98-8e18-2e8d0da7e4ca
+:END:
 Here we import hiccup so we can write our HTML in Clojure.
 #+NAME: html-deps.
 #+BEGIN_SRC clojure
@@ -196,9 +258,15 @@ Here we import hiccup so we can write our HTML in Clojure.
 #+END_SRC
 
 ** Preamble and Postamble
+:PROPERTIES:
+:ID:       9ffdbc0f-f6bd-4f27-ac6f-edc124c70854
+:END:
 This is the first section of the program and the
 
 *** License Info
+:PROPERTIES:
+:ID:       4fd42343-09fa-4147-bf9e-eecb8d1edadf
+:END:
 This is the license info for my website. I selected the license because it provides one-way compatibility with the GPL-3.0 license. Thus I can license my code under the GPL, while licensing most of the text of the site under the [[https://creativecommons.org/licenses/by-sa/4.0/][CC-BY-SA 4.0 license]]. Currently it is displayed in the postamble on all pages, though I might want to alter that someday.
 
 #+NAME: license-info
@@ -212,6 +280,9 @@ This is the license info for my website. I selected the license because it provi
 #+END_SRC
 
 *** Preamble
+:PROPERTIES:
+:ID:       83ec2c2a-0ade-4cc1-bb1d-7c3520b4ee93
+:END:
 This adds a few links to the beginning of the document to aid with navigation.
 #+NAME: emacs-html-preamble
 #+BEGIN_SRC clojure :results verbatim
@@ -231,6 +302,9 @@ This is the Emacs code that sets the preamble
 #+END_SRC
 
 *** Postamble
+:PROPERTIES:
+:ID:       91179f88-cd71-4444-996a-515f05db124a
+:END:
 The end of each document this adds a little bit of text containing the info about the program that created it, the date the file was modified, and licensing information
 #+NAME: emacs-html-postamble
 #+BEGIN_SRC clojure :results verbatim
@@ -249,11 +323,18 @@ This code sets the postamble.
 
 
 * Stylesheets
+:PROPERTIES:
+:ID:       a98f1437-8108-4de2-92c1-2f28b3ad72ad
+:PUBDATE:  <2021-04-03 Sat 22:11>
+:END:
 While [[https://orgmode.org/manual/HTML-Export.html#HTML-Export][org-html-export]] does an admirable job at exporting code in my preferred syntax highlighting style, it unfortunately does not replicate the other features of my org-mode buffers. To do that I use [[https://github.com/noprompt/garden][Garden]], a Clojure library for rendering CSS.
 
 The reason I use garden is mostly because I dislike using CSS directly or.
 
 ** Emacs Configuration
+:PROPERTIES:
+:ID:       9e5769bf-5eaf-45b1-a300-07592fd02cfb
+:END:
 This adds the Emacs configuration for the stylesheets in the blog. It also adds a link to the fonts stylesheet.
 #+NAME: stylesheet-html
 #+BEGIN_SRC clojure :results verbatim
@@ -267,6 +348,9 @@ This property then sets the HTML head on every file to be the HTML generated by 
 #+END_SRC
 
 ** Create CSS File
+:PROPERTIES:
+:ID:       6dc27afd-b4f7-477c-8ef1-2d5f809eae9b
+:END:
 This creates the CSS file in my public directory. It is automatically called every time the project is updated (thus generating the CSS file). This ensures that the state of this file is kept in sync with the actual state of the project itself.
 #+NAME: stylesheet
 #+BEGIN_SRC clojure :results silent
@@ -300,6 +384,9 @@ This creates the CSS file in my public directory. It is automatically called eve
 #+CALL: stylesheet()
 
 ** Default Background and Foreground
+:PROPERTIES:
+:ID:       69ed328f-0e34-41b3-9712-ce4ef735e9bd
+:END:
 This keeps the default background and foreground in sync with the rest of the system. To see the code blocks being called, view the [[Helper Code Blocks][helper blocks]] section. I also set up the font I use here, in this case [[https://typeof.net/Iosevka/][Iosevka]], a pleasing DIN-like font that is entirely fixed-width for use in terminals.
 
 The Iosevka Term Web font itself provides a [[file:iosevka-term-css.org][css file]] that works rather well. 
@@ -313,6 +400,9 @@ The Iosevka Term Web font itself provides a [[file:iosevka-term-css.org][css fil
 #+END_SRC
 
 ** Todo Items
+:PROPERTIES:
+:ID:       e0a94046-9974-4b03-bdf8-649dbbe9a95d
+:END:
 This fixes the coloration of TODO keywords in headers. Initally they are a somewhat ugly red color.
 #+NAME: stylesheet-todo
 #+BEGIN_SRC clojure
@@ -321,6 +411,9 @@ This fixes the coloration of TODO keywords in headers. Initally they are a somew
 #+END_SRC
 
 ** Selected Text
+:PROPERTIES:
+:ID:       060fe53e-ad37-4f94-a88e-5e9d460d501e
+:END:
 This makes the text selection look good using the [[https://developer.mozilla.org/en-US/docs/Web/CSS/::selection][selection]] pseudo-element.
 #+NAME: stylesheet-selection
 #+BEGIN_SRC clojure
@@ -329,6 +422,9 @@ This makes the text selection look good using the [[https://developer.mozilla.or
 #+END_SRC
 
 ** Headlines
+:PROPERTIES:
+:ID:       e3209f7d-fe3b-42f1-8143-b7cf7c8023dd
+:END:
 Here I restyle the headlines using the style I currently use in Emacs. These code blocks automatically fetch them and return a string that can be inserted.
 #+NAME: stylesheet-headlines
 #+BEGIN_SRC clojurescript
@@ -338,6 +434,9 @@ Here I restyle the headlines using the style I currently use in Emacs. These cod
 #+END_SRC
 
 ** Author and Title Information
+:PROPERTIES:
+:ID:       d4f2a79b-ffca-492a-bd0a-4cf33983972b
+:END:
 The title, date, and author information in Emacs are usually the same color. So I set them here.
 #+NAME: stylesheet-info
 #+BEGIN_SRC clojure
@@ -350,6 +449,9 @@ The title, date, and author information in Emacs are usually the same color. So 
 
 
 *** Blocks
+:PROPERTIES:
+:ID:       bf7d5bb5-42e5-454f-9271-3f60abdc800c
+:END:
 This removes the irritating border and shadow from the code blocks.
 #+NAME: stylesheet-src-block
 #+BEGIN_SRC clojure
@@ -361,6 +463,9 @@ This removes the irritating border and shadow from the code blocks.
 #+END_SRC
 
 *** Hover Info
+:PROPERTIES:
+:ID:       e41af7c2-6a90-4ac6-a1e0-b40b451c5410
+:END:
 This adds the hover info to ClojureScript, which was not included by default.
 #+NAME: stylesheet-src-hover-info
 #+BEGIN_SRC clojure
@@ -374,6 +479,9 @@ This adds the hover info to ClojureScript, which was not included by default.
 #+END_SRC
 
 ** Links
+:PROPERTIES:
+:ID:       1cbee566-7c24-4b67-a31b-3cb47edb193f
+:END:
 This stylizes links to match the links in Emacs org-mode buffers.
 #+NAME: stylesheet-links
 #+BEGIN_SRC clojure
@@ -390,6 +498,9 @@ This stylizes links to match the links in Emacs org-mode buffers.
 #+END_SRC
 
 ** Helper Code Blocks
+:PROPERTIES:
+:ID:       7f295124-cbb1-4f6f-8abe-f668c1500057
+:END:
 These are little helper code blocks that fetch the face attributes I want automatically from emacs every time I regenerate the file. This ensures that my code remains in-sync with my Emacs configuration style.
 
 This code block simply extracts the foreground color. Mostly used for headlines, but also for text in general.

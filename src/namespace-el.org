@@ -65,9 +65,6 @@ This is the macro itself and
          ,@(ns-remove-private-defs namespace transformed-forms)))))
 #+END_SRC
 
-#+RESULTS:
-: namespace
-
 ** Finding Private Definitions
 To start off everything we search for definitions, value setting, and other similar things to ensure the values are captured in the current namespace. Currently this is only done on the top level because dealing with internal functions gets rather irritating rather quickly. For the purposes of this definition search only [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Variables.html][defvar]], [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Variables.html][defconst]], [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html][defmacro]], defun, and defalias will be counted.
 
@@ -77,8 +74,6 @@ Now to make a symbol public you simply prefix it with the symbol used in the nam
   "Another simple namespacing example."
   (defun private-fn (a b) (+ a b))
   (defun namespaced-public-fn () (private-fn 3 4)))
-
-(namespaced-public-fn)
 #+END_SRC
 
 Thus we also filter out the definitions that begin with the same symbol as the namespace itself. This enforces a standardized approach to function naming and, as long as no two namespaces have the same name, eliminates the risk of name collisions.
