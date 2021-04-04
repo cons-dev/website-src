@@ -6,11 +6,11 @@ This documents major changes to the [[file:source-code.org][source code]] of the
 
 * 1.0.2 - 2021-W13-1
 ** Added
-- [[file:../../../.local/share/Trash/files/blog-code.org][preamble and postamble]] to blog posts
+- [[file:source-code.org][preamble and postamble]] to blog posts
 - CC-BY-SA 4.0 license
 ** Removed
 - top/home section
-- replaced top/home header with [[file:../../../.local/share/Trash/files/blog-code.org][preamble]] to increase clarity
+- replaced top/home header with [[file:source-code.org][preamble]] to increase clarity
 
 * 1.0.1 - 2021-W13-1
 ** Added
@@ -18,9 +18,9 @@ This documents major changes to the [[file:source-code.org][source code]] of the
 
 * 1.0 - 2021-W12-7
 ** Added
-- [[file:../../../.local/share/Trash/files/blog-code.org][basic CSS layout]] to mimic Emacs configuration
+- [[file:source-code.org][basic CSS layout]] to mimic Emacs configuration
 - a few files from my memex
-- created [[file:../../../.local/share/Trash/files/blog-code.org][.dir-locals system]] to help centralize blog configuration
+- created [[file:source-code.org][.dir-locals system]] to help centralize blog configuration
 
 
  

@@ -1,0 +1,28 @@
+#+TITLE: (cons dev nil)
+#+SUBTITLE: Main Index
+#+DESCRIPTION: A blog on lisp, worldbuilding, cooking, and all sorts of other things.
+#+OPTIONS: toc:nil
+#+ROAM_TAGS: website public index
+
+* Introduction
+This is my website where I post about [[file:namespace-el.org][adding namespaces to Emacs Lisp]], [[file:lamb-with-wine.org][making weird food]], and other such things. I also occasionally write NSFW things (which are indicated with the [NSFW] marker in the title). I also might post some programming tutorials. You can see a [[file:changelog.org][changelog]], and a listing of [[file:todo.org][todo items]] in their respective files.
+
+* Indices
+These link to the various categories in the website.
+** [[file:programming-index.org][Programming]]
+This is my collection of posts on programming. It 
+** [[file:food-index.org][Food]]
+Posts on food, making food, eating food, reviewing food, and other such things.
+** [[file:fiction-index.org][Fiction]]
+Worldbuilding and sci-fi story related documents.
+** Blog Posts                                    :noexport:
+These are blog posts about various topics. Mostly one-off essays, reviews and other things that will not be updated regularly.
+** Music                                         :noexport:
+Some music that I have written. Mostly algorithmic electronic.
+** Art                                           :noexport:
+Some art that I have created.
+** Games                                         :noexport:
+Video/board games that I have developed.
+
+* Source Code
+The source code for the stuff that generated the blog is [[file:source-code.org][available here]] in blog-post form. Major changes to that code (and the occasional major update to the blog) are noted in the [[file:changelog.org][changelog]].

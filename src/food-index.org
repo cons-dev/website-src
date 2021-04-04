@@ -1,7 +1,7 @@
 #+TITLE: Food Index
 #+DESCRIPTION: An index of posts about food and other similar things.
 #+OPTIONS: toc:nil
-#+ROAM_TAGS: blog public food recipies index
+#+ROAM_TAGS: website public food recipies index
 
 * Introduction
 This is a listing of blog posts about food and the various things I have cooked, reviews of food, and other similar things. I might even add images to the listing eventually.

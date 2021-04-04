@@ -1,0 +1,213 @@
+#+TITLE: Namespaces in My Emacs? It's More Likely than you think!
+#+SUBTITLE: Implementing namespaces and private symbols using lexical closures.
+#+DESCRIPTION: Implementing namespaces and private in Emacs using lexical closures, lambdas, and macros.
+#+PROPERTY: header-args :noweb no-export :lexical t
+#+ROAM_TAGS: source-code emacs-lisp programming website public concept
+
+* Conception
+So it's commonly said that Emacs does not have namespaces, everything is in one global mess of functions. This works because people create pseudo-namespaces by simply adding the name of the package onto the beginning of a function. This sadly leads to /really/ long function names that can be an impediment to comprehension.
+
+But I realized while working on this blog (specifically when using it to avoid polluting the global namespace [[file:source-code.org::*Automatic Publishing Function][here]]) that lexical binding and lexical closures were basically private functions and namespaces, if ugly looking. Therefore, if you just used something akin to this:
+#+BEGIN_SRC emacs-lisp
+(setq lexical-binding t)
+(let ((fun (lambda (var) (+ var 23))))
+  (defun more-fun (a)
+    (funcall fun a)))
+#+END_SRC
+You would discover that ~fun~ was no longer defined outside of the let binding, /however/ (and this is the exciting part) ~more-fun~ would still add 23 to it's input because it had successfully captured ~fun~! This is very fun.
+
+So I began to wonder, what if I could /make/ a namespace macro that solves this problem? The answer (obviously) is yes, though unfortunately it is still rather brittle due to the tenuous nature of lexical scoping in Emacs lisp. The implementation however was quick and allows you to take that code above and make it very readable:
+#+BEGIN_SRC emacs-lisp
+(ns more
+  "An example for a really fun idea."
+  (defun fun (var) (+ var 23))
+  (defun more-fun (a)
+      (fun a)))
+#+END_SRC
+
+This is a much more natural way to write everything and, as implied, creates public functions based upon the inclusion of the namsepace symbol in the beginning of the function. This is pretty easy and the details of this implementation are provided [[Finding Private Definitions][here]].
+
+I basically have to have the program walk the entire tree of all function calls and replace ~(fun whatever)~ with ~(funcall fun whatever)~. This is not especially bad, but it does have to do it post macroexpansion and in O(n) time, which if you have very macro heavy code can be a pain.
+
+After talking to some people about this I realized that this is similar to some of the concepts described in /[[https://letoverlambda.com][Let Over Lambda]]/, a book on using lexical closures in macros for fun stuff like this.
+
+* Implementation
+The implementation is broken into a few helper functions and the macro. Because this is a demo (and not meant for RL code) I can use the helper functions since I can rely on them being expanded and loaded before the macro. However, if this were not a toy implementation then I would have to be fairly careful to ensure they are loaded in the proper order.
+
+Regardless the algorithm for the transformations is fairly simple: first the system traverses the top level s-expressions in the namespace and first checks that they are in our list of "definitions".
+
+Then the top level forms are macroexpanded fully and traversed in a depth first search, unquoting and replacing private function calls with ~funcall~ syntax. It is important to macroexpand the functions fully since they may contain features that are not properly called.
+
+Following this process private symbols are "collected" in order and transformed into the let syntax. Currently I use the ~let~ rather than ~let*~ for reasons discussed in the [[Private Functions / Macros Cannot Be Called to Set Private Variables][limitations]] section
+
+** The ~ns~ Macro
+This is the macro itself and
+#+BEGIN_SRC emacs-lisp
+<<ns-private?>>
+<<ns-find-private-refs>>
+<<ns-transform-private-refs>>
+<<ns-create-private-binds>>
+<<ns-remove-private-defs>>
+
+(defmacro ns (namespace &rest forms-and-doc)
+  (declare (doc-string 2)
+           (indent defun))
+  (let* ((forms (if (eq (-> forms-and-doc first type-of) 'string)
+                    (rest forms-and-doc)
+                  forms-and-doc))
+         (private-refs (ns-find-private-refs namespace forms))
+         (expanded-forms (-map 'macroexpand-all forms))
+         (transformed-forms (ns-transform-private-refs namespace private-refs expanded-forms)))
+    `(progn
+       (setq lexical-binding t)
+       (let ,(ns-create-private-binds namespace transformed-forms)
+         ,@(ns-remove-private-defs namespace transformed-forms)))))
+#+END_SRC
+
+#+RESULTS:
+: namespace
+
+** Finding Private Definitions
+To start off everything we search for definitions, value setting, and other similar things to ensure the values are captured in the current namespace. Currently this is only done on the top level because dealing with internal functions gets rather irritating rather quickly. For the purposes of this definition search only [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Variables.html][defvar]], [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Variables.html][defconst]], [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Defining-Macros.html][defmacro]], defun, and defalias will be counted.
+
+Now to make a symbol public you simply prefix it with the symbol used in the namespace. So to define a public function one might write:
+#+BEGIN_SRC emacs-lisp
+(ns namespaced
+  "Another simple namespacing example."
+  (defun private-fn (a b) (+ a b))
+  (defun namespaced-public-fn () (private-fn 3 4)))
+
+(namespaced-public-fn)
+#+END_SRC
+
+Thus we also filter out the definitions that begin with the same symbol as the namespace itself. This enforces a standardized approach to function naming and, as long as no two namespaces have the same name, eliminates the risk of name collisions.
+
+*** ns-find-private-refs
+This filters the top level forms of the namespace using the [[ns-private?][ns-private?]] predicate function and then returns the list of all top level functions.
+#+NAME: ns-find-private-refs
+#+BEGIN_SRC emacs-lisp
+(defun ns-find-private-refs (namespace forms)
+  (->> forms
+       (-filter (-partial #'ns-private? namespace))
+       (-map 'second)))
+#+END_SRC
+
+#+RESULTS: ns-find-privates
+: ns-find-private-refs
+
+*** ns-private?
+Here we define a small function that checks if our top level form is public. This simply grabs the first value of the form, then checks the second to see if it is the form has enough symbols to be a definition, then checks if it is top level or not.
+#+NAME: ns-private?
+#+BEGIN_SRC emacs-lisp
+(defun ns-private? (namespace top-level-form)
+  (let((form-fun (first top-level-form)))
+    (and (> (length top-level-form) 2)
+         (-contains?
+          (list 'defun 'defvar 'defmacro 'defconst 'defalias)
+          form-fun)
+         (not (s-matches? (format "%s-.*" (symbol-name namespace))
+                          (symbol-name (if (eq form-fun 'defalias)
+                                           (second (second top-level-form))
+                                         (second top-level-form))))))))
+#+END_SRC
+
+** Structure Transformers
+Once we have a list of private definitions, we need to transform regular calls into the ~funcall~ syntax and unquote quoted names of our functions since our function symbols are actually variables. Now Emacs Lisp is a functional programming language, but the way the functions are defined is through the ~fset~ special form rather than simply setting a variable to a lambda, which gives their symbols a different syntax than that of a lambda simply bound to a symbol.
+
+*** ns-transform-private-refs
+This is a recursive function that conducts a depth first search of the tree created by the s-expressions, modifying them so that they are properly referred to as variables. It unfortunately has a lot of special cases / repeated structure which indicates to me that it is not as elegant as it could be, though I decided to not focus too much effort on refactoring it since this is both a toy example and irritatingly fragile code.
+#+NAME: ns-transform-private-refs
+#+BEGIN_SRC emacs-lisp
+(defun ns-transform-private-refs (namespace private-refs forms)
+  (cond ((not (eq (type-of forms) 'cons))
+         forms)
+        ((and (eq (first forms) 'quote)
+              (-contains? private-refs (second forms)))
+         (second forms))
+        ((eq (first forms) 'defalias)
+         (append
+          `(,(first forms))
+          `(,(second forms))
+          (-map (-partial 'ns-transform-private-refs namespace private-refs)
+                (rest (rest forms)))));; avoid unquoting first form
+        ((-contains? private-refs (first forms))
+         (-map (-partial 'ns-transform-private-refs namespace private-refs)
+               (cons 'funcall forms)))
+        (t
+         (-map (-partial 'ns-transform-private-refs namespace private-refs)
+               forms))))
+#+END_SRC
+
+*** ns-create-private-binds
+This transforms private bindings into a listing of symbols value two length lists as used by the ~let~ special form. The only tricky bit is pulling symbols from defalias.
+#+NAME: ns-create-private-binds
+#+BEGIN_SRC emacs-lisp
+(defun ns-create-private-binds (namespace forms)
+  (->> forms
+       (-filter (-partial #'ns-private? namespace))
+       (-map (lambda (form)
+               (let ((sym (if (eq (first form) 'defalias)
+                              (second (second form))
+                            (second form)))
+                     (val (third form)))
+                 `(,sym ,val))))))
+#+END_SRC
+
+*** ns-remove-private-defs
+This removes the private references from the list that is located in the public portion of the ~let~ special form, preventing their definition in the global lexical scope.
+#+NAME: ns-remove-private-refs
+#+BEGIN_SRC emacs-lisp
+(defun ns-remove-private-defs (namespace forms)
+  (-filter (lambda (form) (not (ns-private? namespace form))) forms))
+#+END_SRC
+
+* Limitations
+** Lexical Binding Needs to be On
+Lexical binding is not active by default and is buffer-local. This is actually pretty bad as it basically causes the lexical closures to suddenly disappear in a puff of smoke. I could use the ~lexical-let~ or ~lexical-let*~ functions in the ~cl~ library, which would solve the problem, though they are specified as being deprecated.
+
+** Private Functions / Macros Cannot Be Called to Set Private Variables
+Unfortunately, because the ~let*~ special form does not produce lexical closures even with ~lexical-binding~ set to ~t~, I cannot effectively use it. This means that all ~let~ forms are bound at the same time (rather than sequentially) and therefore cannot be called to set private variables or generate private code.
+
+I could write my own ~let*~ replacement to bind them sequentially, which would work though also be a bit inelegant and be working around what I /think/ is a bug in Emacs itself (which is therefore something that ought to be fixed in the C source code, not hacked around).
+
+* Possible Improvements
+Though it does show that Emacs has the fundamental components needed for private variables / functions already I think that some improvements could be made, namely the addition of the ability to import namespaces. I also might want to think beyond namespaces and look at implementing something altogether more general (though I don't want to simply write another object system for Emacs).
+
+** Making Lexical Binding Default
+There is also a major issue when dealing with code without lexical binding as in those cases the functions suddenly break as they are no longer lexical closures, and since ~lexical-binding~ is buffer-local, that kind of messes up a lot of code. Therefore I think the next step is to take a deep dive into Emacs Lisp code and look at how I could make lexical binding the default for all new files and the user environment.
+
+** Higher Order Macros
+Another interesting possibility with namespaces is to drop the whole lexical closure thing instead make them macros that provide access to a list of lambdas indexed by the symbol provided. So for example:
+
+#+BEGIN_SRC emacs-lisp
+(ns foo
+  (defun bar (a) (! (a + 3))))
+#+END_SRC
+
+Would produce a macro called "foo" that would, depending on it's arguments, expand to a variety of different functions. Then you could call the functions in it like so:
+
+#+BEGIN_SRC emacs-lisp
+(foo bar 33)
+#+END_SRC
+
+You could also alias that function using the namespace macros produced, which would make it intuitive to directly use your functions in the new namespace while also not requiring lexical scoping.
+
+#+BEGIN_SRC emacs-lisp
+(defalias (foo bar))
+#+END_SRC
+
+I might try it out sometime soon and will link to the blog post, regardless of how successful the implementation is.
+
+* Further Thoughts
+** Namespaces and Objects
+One interesting thing that I found while implementing this is that namespaces are in essence singlton static classes, and that it is really more proper to say that classes are the general case of namespaces. This actually makes me respect the python approach to namespaces a little more.
+
+However, I think the affordances of namespaces and classes are rather different, producing different outcomes in terms of software design. Classes make it easy to envision coupling state with data (sort of like closures), but encourage it rather strongly, often being seen as a extension of the ~struct~ concept in C.
+
+Namespaces however, do not obviously make it so that you can couple state and data even if you can use them as singleton classes. Therefore one ins inclined to approach them from a more functional perspective.
+
+** Inheritance
+It also became apparent that you can fairly easily implement all object oriented programming concepts including inheritance (contrary as to what is implied with /Let Over Lambda/) with lexical closures and lambdas. One simply makes it such that the closure will evaluate another closure within it's environment and then returns that closure, creating a sort of tower of lexical closures.
+
+** Doing Without ~let~
+It is possible to do this all without let, assuming you permit a modification of how ~lambda~ works. Instead of having ~lambda~ merely producing an anonymous function, imagine if it creates a new lexical scope and that a ~set~ function exists that can bind variables within that scope. Using this it is trivial to construct a ~let~ function using ~set~ and ~lambda~ alone. This has pretty much no practical application, though I thought the idea was somewhat cool.

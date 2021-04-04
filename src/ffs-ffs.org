@@ -1,6 +1,6 @@
 #+TITLE: FFS, FFS!
 #+DESCRIPTION: A short story about FFS.
-#+ROAM_TAGS: blog creative-writing story science-fiction
+#+ROAM_TAGS: website creative-writing story science-fiction
 
 I had quit my job at Valezon Technologies a week ago. They had decided that they wanted to put me on DS duty, I decided that they weren't worth working for anymore. My boss had yelled at me across his desk, I yelled back, all that jazz. Probably wouldn't work corp again.
 

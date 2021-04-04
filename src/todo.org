@@ -1,0 +1,32 @@
+#+TITLE: TODO Items
+#+DESCRIPTION: A list of plans, projects, and other similar things on the blog.
+#+OPTIONS: toc:nil
+#+ROAM_TAGS: website public todo
+
+* Intro
+This is a list of projects, plans, and other similar things for the blog.
+
+* Code
+** Add
+*** DONE [[file:source-code.org][preamble/postamble]] section
+*** TODO fully custom CSS
+*** TODO ClojureScript execution in source code blocks
+*** TODO floating preamble section
+*** TODO automatically generate HTML for linked manual pages / help entries
+This presumably would be done through [[https://github.com/hniksic/emacs-htmlize][htmlize]] and a modification to the system for creating the links.
+*** TODO remove broken internal links from pages (with warning)
+*** TODO make site-internal links a different color than external ones
+This way each link has it's own.
+*** TODO add on-hover popups for site-internal links
+Have the description of the link (along with title of link) pop up when the user hovers over an internal link.
+*** TODO automatically generate page descriptions
+** Remove
+** Fix
+
+* Content
+** Programming
+*** TODO Add a ClojureScript tutorial.
+*** TODO Create a tutorial on literate programming.
+** Creative Writing
+*** TODO Add the various things I have written.
+*** TODO Clean up worldbuilding docs for publishing.
